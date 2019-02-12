@@ -53,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what==1){
                 MagnetUri m = (MagnetUri) msg.obj;
-                magnetUriList.add(m);
+                if(!magnetUriList.contains(m)) {
+                    magnetUriList.add(m);
+                }
                 adapter.notifyDataSetChanged();
                 Log.d(TAG, "handleMessage: "+magnetUriList.size());
                 processDialog.dismiss();
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         context = MainActivity.this;
         magnetUriList = new ArrayList<>();
         recyclerView = (RecyclerView)findViewById(R.id.rv_recycler);
-
+        getSupportActionBar().setTitle("搜兔SosoTool  By: Zbuter");
 
         mSearchView = (SearchView) findViewById(R.id.search);
         mSearchView.setIconifiedByDefault(false);
@@ -94,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setFocusable(false);
         mSearchView.clearFocus();
 
+        // 正在加载的对话框
+        processDialog = new ProgressDialog(context);
+        processDialog.setMessage("正在加载...");
+        processDialog.setCanceledOnTouchOutside(false);
 
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -103,14 +109,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextSubmit(String queryText) {
-
-                // 正在加载的对话框
-                processDialog = new ProgressDialog(context);
-                processDialog.setMessage("正在加载...");
-                processDialog.setCanceledOnTouchOutside(false);
-                processDialog.show();
-
-
+                if(!processDialog.isShowing()){
+                    processDialog.show();
+                }
                 magnetUriList.clear();
                 keyword = queryText;
                 curUrl = MAIN_URL+"/cn/search/" + keyword + "/";
@@ -143,10 +144,16 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, "没有更多内容了", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "没有更多内容了。", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "正在加载...", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             getMagnetUriList();
                         }
 
@@ -174,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void getMagnetUriList(){
 
-
         OKHttpUtil.getInstance().get(curUrl ,new MyCallBack() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -189,19 +195,20 @@ public class MainActivity extends AppCompatActivity {
         String nextUrl = null;
         Document doc = Jsoup.parse(html);
         Elements tables = doc.getElementsByClass("table");
-
         if(tables.isEmpty()){//没有磁力链接
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(context, "没有找到相关的磁力链接", Toast.LENGTH_SHORT).show();
+                    if(processDialog.isShowing()){
+                        processDialog.dismiss();
+                    }
                 }
             });
         }else{
 
-            nextUrl = getNextUrl(keyword,html);
-
             Elements trNodes = tables.first().getElementsByTag("tr");
+            nextUrl = getNextUrl(keyword,html);
             for(Element trNode : trNodes){
                 final MagnetUri magnetUri = new MagnetUri();
                 Element tdNode = trNode.getElementsByTag("td").first();
@@ -209,20 +216,35 @@ public class MainActivity extends AppCompatActivity {
                         .getElementsByTag("a").first().attr("title");
                 String href = tdNode.getElementsByTag("div").first()
                         .getElementsByTag("a").first().attr("href");
-
                 int end = href.lastIndexOf(".");
                 int start = href.lastIndexOf("/");
                 // 获得这个磁力链接的id
                 String id = href.substring(start+1,end);
-
                 String tips = tdNode.getElementsByClass("tail").first()
                         .text().trim();
-
                 magnetUri.setName(title);
                 magnetUri.setTips(tips);
                 magnetUri.setId(id);
                 Log.d(TAG, "parserMagnetUri: "+magnetUri);
 //                magnetUriList.add(magnetUri);
+                mulThreadParserMagnetUri(magnetUri,id);
+
+                Message msg = Message.obtain();
+                msg.what=1;
+                msg.obj=magnetUri;
+                handler.sendMessage(msg);
+            }
+
+        }
+
+        curUrl = nextUrl;
+        return nextUrl;
+    }
+
+    public void mulThreadParserMagnetUri(final MagnetUri magnetUri, final String id){
+        new Runnable() {
+            @Override
+            public void run() {
                 OKHttpUtil.getInstance().get("https://bthaha.men/api/json_info?hashes=" + id, new MyCallBack() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
@@ -247,16 +269,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-                Message msg = Message.obtain();
-                msg.what=1;
-                msg.obj=magnetUri;
-                handler.sendMessage(msg);
             }
+        };
 
-        }
-
-        curUrl = nextUrl;
-        return nextUrl;
     }
 
     public String getNextUrl(String keyword ,String html){

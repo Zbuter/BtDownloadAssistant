@@ -1,33 +1,30 @@
 package cn.zbuter.btdownloadassistant;
 
-import java.util.List;
-
-public class MagnetUri {
-    private String Magnet;
-    private String name;
-    private long length;
-    private String create_time;
-    private String tips;
+public class MagnetUri{
     private String id;
+    private String name;
+    private String tips;
+    private String magnet;
+    private long length;
+    private String CreateTime;
 
-    @Override
-    public String toString() {
-        return "MagnetUri{" +
-                "Magnet='" + Magnet + '\'' +
-                ", name='" + name + '\'' +
-                ", length=" + length +
-                ", create_time='" + create_time + '\'' +
-                ", tips='" + tips + '\'' +
-                ", id='" + id + '\'' +
-                '}';
+    public MagnetUri(String id, String name, String tips, String magnet, long length, String createTime) {
+        this.id = id;
+        this.name = name;
+        this.tips = tips;
+        this.magnet = magnet;
+        this.length = length;
+        CreateTime = createTime;
+    }
+    public MagnetUri(){
+
+    }
+    public String getId() {
+        return id;
     }
 
-    public String getMagnet() {
-        return Magnet;
-    }
-
-    public void setMagnet(String magnet) {
-        Magnet = magnet;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -38,23 +35,6 @@ public class MagnetUri {
         this.name = name;
     }
 
-    public long getLength() {
-        return length;
-    }
-
-    public void setLength(long length) {
-        this.length = length;
-    }
-
-    public String getCreate_time() {
-        return create_time;
-    }
-
-    public void setCreate_time(String create_time) {
-        this.create_time = create_time;
-    }
-
-
     public String getTips() {
         return tips;
     }
@@ -63,13 +43,27 @@ public class MagnetUri {
         this.tips = tips;
     }
 
-    public String getId() {
-        return id;
+    public String getMagnet() {
+        return magnet;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMagnet(String magnet) {
+        this.magnet = magnet;
     }
 
+    public long getLength() {
+        return length;
+    }
 
+    public void setLength(long length) {
+        this.length = length;
+    }
+
+    public String getCreateTime() {
+        return CreateTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        CreateTime = createTime;
+    }
 }

@@ -42,6 +42,7 @@ public class SponsorAuthor extends AppCompatActivity implements View.OnLongClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("搜兔SosoTool  By: Zbuter");
         setContentView(R.layout.activity_sponsor_author);
         ivZhifubao = (ImageView)findViewById(R.id.iv_zhifubao);
         ivWeixin = (ImageView)findViewById(R.id.iv_weixin);
@@ -49,8 +50,14 @@ public class SponsorAuthor extends AppCompatActivity implements View.OnLongClick
         textView = (TextView)findViewById(R.id.tv_tips);
         textView.setText("如果觉得这款软件用着还不错的话可以给作者鼓励一下。\n" +
                 "\n" +
+                "只有您的肯定才是我更新下去的动力！\n" +
+                "\n"+
                 "长按以下图片将保存相应图片到本地，并自动跳转到相应的扫一扫界面\n" +
                 "\n" +
+                "注：\n" +
+                "    1. 微信扫码有可能需要在左下角的所有图片改到Pictures文件夹才能找到图片\n" +
+                "    2. 可以在备注中说明想要增加的功能，如果可以我会尽快实现。\n" +
+                "\n"+
                 "1分也是爱。 1. 支付宝   2. 微信   3. 支付宝红包\n" +
                 "\n" +
                 "最后感谢您的支持。");

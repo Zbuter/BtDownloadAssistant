@@ -7,6 +7,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,6 +26,8 @@ public class OKHttpUtil {
 
     public OKHttpUtil() {
         okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)//设置连接超时时间
+                .readTimeout(20, TimeUnit.SECONDS)//设置读取超时时间
                 .addInterceptor(new LoggingInterceptor())
                 .build();
     }

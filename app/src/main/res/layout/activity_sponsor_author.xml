@@ -15,19 +15,19 @@
         <ImageView
             android:layout_weight="1"
             android:id="@+id/iv_zhifubao"
-            android:src="@drawable/zhifubao"
+            android:src="@mipmap/zhifubao"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
             android:layout_weight="1"
             android:id="@+id/iv_weixin"
-            android:src="@drawable/weixin"
+            android:src="@mipmap/weixin"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
             android:layout_weight="1"
             android:id="@+id/iv_zhifubaohongbao"
-            android:src="@drawable/zhifubaohongbao"
+            android:src="@mipmap/zhifubaohongbao"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
 
